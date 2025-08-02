@@ -194,7 +194,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     } else if (date.day == now.day - 1) {
       displayDate = 'Ayer';
     } else {
-      displayDate = dateKey; // Puedes formatear esto mejor si quieres.
+      displayDate = dateKey; 
     }
     
     return Container(
@@ -277,7 +277,7 @@ class _EventListItem extends StatelessWidget {
         subtitle: Text(event['details']),
         trailing: Text(time, style: const TextStyle(color: Colors.grey)),
         onTap: () {
-          // TODO: Navegar al detalle completo del evento si es necesario.
+          // Podemos navegar a una pantalla de detalles si es necesario.
         },
       ),
     );

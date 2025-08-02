@@ -63,7 +63,7 @@ class _BarraNavInferiorState extends State<BarraNavInferior> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        body: widget.child, // Accedemos al child a través de 'widget.'
+        body: widget.child, 
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _calculateSelectedIndex(),
           onTap: _onItemTapped,

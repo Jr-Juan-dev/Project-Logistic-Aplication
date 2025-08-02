@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:topax/screens/qr_scanner_screen.dart'; // Asegúrate que la ruta sea correcta
+import 'package:topax/screens/qr_scanner_screen.dart'; 
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

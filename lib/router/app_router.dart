@@ -1,4 +1,3 @@
-// lib/router/app_router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:topax/screens/barra_navegacion/barra_nav_inferior.dart';
@@ -42,7 +41,7 @@ final GoRouter appRouter = GoRouter(
           builder: (context, state) => const HistoryScreen(),
         ),
         GoRoute(
-          path: '/tracking', // Nueva ruta para el 4º ícono
+          path: '/tracking', 
           name: TrackingScreen.name,
           builder: (context, state) => const TrackingScreen(),
         ),

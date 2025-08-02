@@ -1,4 +1,3 @@
-// lib/screens/tracking_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:topax/screens/qr_scanner_screen.dart';
@@ -70,7 +69,7 @@ class _TrackingScreenState extends State<TrackingScreen>
         'id': '1Z999AA1234567890',
         'status':
             PackageStatus
-                .inTransitToBuenaventura, // CAMBIA ESTE VALOR PARA PROBAR DIFERENTES ESTADOS
+                .inTransitToBuenaventura, // Simulamos que el paquete está en tránsito
       };
     } else {
       _packageData = null;
