@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:topax/router/app_router.dart'; // Asegúrate de que la ruta sea correcta
+import 'package:topax/router/app_router.dart';
 
 void main() {
   runApp(const MyApp());
