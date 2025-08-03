@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 24),
-        
+
                                   // Título principal
                                   Center(
                                     child: Text(
@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-        
+
                                   // Subtítulo
                                   Center(
                                     child: Text(
@@ -166,10 +166,11 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 40),
-        
+
                                   // Campo de entrada mejorado
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Teléfono o correo electrónico',
@@ -182,10 +183,14 @@ class _LoginScreenState extends State<LoginScreen>
                                       const SizedBox(height: 8),
                                       Container(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.grey.withOpacity(0.1),
+                                              color: Colors.grey.withOpacity(
+                                                0.1,
+                                              ),
                                               offset: const Offset(0, 2),
                                               blurRadius: 8,
                                             ),
@@ -206,25 +211,22 @@ class _LoginScreenState extends State<LoginScreen>
                                                   horizontal: 20.0,
                                                 ),
                                             border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                12.0,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
                                               borderSide: BorderSide(
                                                 color: Colors.grey[200]!,
                                               ),
                                             ),
                                             enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                12.0,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
                                               borderSide: BorderSide(
                                                 color: Colors.grey[200]!,
                                               ),
                                             ),
                                             focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                12.0,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
                                               borderSide: const BorderSide(
                                                 color: primaryBlue,
                                                 width: 2,
@@ -246,13 +248,16 @@ class _LoginScreenState extends State<LoginScreen>
                                     ],
                                   ),
                                   const SizedBox(height: 32),
-        
+
                                   // Botón principal mejorado
                                   Container(
                                     height: 56,
                                     decoration: BoxDecoration(
                                       gradient: const LinearGradient(
-                                        colors: [accentGreen, Color(0xFF20A13A)],
+                                        colors: [
+                                          accentGreen,
+                                          Color(0xFF20A13A),
+                                        ],
                                         begin: Alignment.topCenter,
                                         end: Alignment.bottomCenter,
                                       ),
@@ -267,7 +272,22 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        context.go('/home');
+                                        context.go('/home'); // Navegar al HomeScreen por defecto
+                                        
+                                        // Aquí puedes agregar la lógica de validación
+                                        // y navegación según el rol del usuario.
+                                    // Ejemplo:
+                                 /* final userRole = await _validateLogin(emailController.text);
+  
+                                     if (userRole == 'admin') {
+                                        context.go('/admin');  // Ir al AdminHomeScreen
+                                      } else if (userRole == 'user') {
+                                     context.go('/home');   // Ir al HomeScreen normal
+                                        } else {
+                                             ScaffoldMessenger.of(context).showSnackBar(
+                                           const SnackBar(content: Text('Credenciales inválidas')),
+                                          );
+                                        }  */
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.transparent,
@@ -290,7 +310,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                   ),
                                   const SizedBox(height: 24),
-        
+
                                   // Enlace de ayuda
                                   Center(
                                     child: TextButton(
@@ -317,9 +337,9 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                             ),
                           ),
-        
+
                           const SizedBox(height: 32),
-        
+
                           // Footer
                           Text(
                             '© 2025 ToPaX. Todos los derechos reservados.',
