@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -63,125 +65,290 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
 
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = MediaQuery.of(context).size.width > 768;
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFB),
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: CustomScrollView(
-          slivers: [
-            // App Bar personalizado
-            SliverAppBar(
-              expandedHeight: 120,
-              floating: false,
-              pinned: true,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                onPressed: () => context.go('/admin/orders'),
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF007BFF), Color(0xFF0056B3)],
-                    ),
+        child: isDesktop ? _buildDesktopLayout() : _buildMobileLayout(),
+      ),
+    );
+  }
+
+  // Layout mejorado para escritorio con mejor distribución
+  Widget _buildDesktopLayout() {
+    return SingleChildScrollView(
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1200), // Aumentado para mejor distribución
+          margin: const EdgeInsets.symmetric(horizontal: 60.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header administrativo compacto
+              Container(
+                margin: const EdgeInsets.only(top: 20, bottom: 20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF007BFF), Color(0xFF0056B3)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(
-                                  Icons.add_box,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              const Text(
-                                'Crear Nuevo Pedido',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 22,
-                                  color: Colors.white,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Complete todos los campos para crear el pedido',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white.withOpacity(0.9),
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      offset: const Offset(0, 4),
+                      blurRadius: 20,
                     ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => context.go('/admin/orders'),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                        tooltip: 'Volver a la lista de pedidos',
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Icon(
+                          Icons.add_box,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Crear Nuevo Pedido',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 28,
+                                color: Colors.white,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Complete todos los campos para crear el pedido',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white.withOpacity(0.9),
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
 
-            // Contenido principal
-            SliverList(
-              delegate: SliverChildListDelegate([
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
+              // Formulario con distribución mejorada (3 columnas)
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    // Primera fila: Información del Cliente + Información del Envío (más ancha) + Detalles del Paquete
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Información del cliente
-                        _buildClientSection(),
-                        const SizedBox(height: 32),
-
-                        // Información del envío
-                        _buildShippingSection(),
-                        const SizedBox(height: 32),
-
-                        // Detalles del paquete
-                        _buildPackageSection(),
-                        const SizedBox(height: 32),
-
-                        // Configuración adicional
-                        _buildAdditionalSection(),
-                        const SizedBox(height: 32),
-
-                        // Botones de acción
-                        _buildActionButtons(),
-                        const SizedBox(height: 100),
+                        // Columna 1: Cliente (30%)
+                        Expanded(
+                          flex: 3,
+                          child: _buildClientSection(true),
+                        ),
+                        const SizedBox(width: 16),
+                        
+                        // Columna 2: Envío (40% - más ancha)
+                        Expanded(
+                          flex: 4,
+                          child: _buildShippingSection(true),
+                        ),
+                        const SizedBox(width: 16),
+                        
+                        // Columna 3: Paquete (30%)
+                        Expanded(
+                          flex: 3,
+                          child: _buildPackageSection(true),
+                        ),
                       ],
                     ),
-                  ),
+                    
+                    const SizedBox(height: 20),
+
+                    // Segunda fila: Configuración Adicional (centrada) + Botones
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Espacio vacío para centrar
+                        Expanded(
+                          flex: 2,
+                          child: Container(),
+                        ),
+                        
+                        // Configuración Adicional centrada
+                        Expanded(
+                          flex: 6,
+                          child: _buildAdditionalSection(true),
+                        ),
+                        
+                        // Espacio vacío para centrar
+                        Expanded(
+                          flex: 2,
+                          child: Container(),
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 24),
+
+                    // Botones de acción centrados
+                    SizedBox(
+                      width: 400,
+                      child: _buildActionButtons(true),
+                    ),
+                    
+                    const SizedBox(height: 40),
+                  ],
                 ),
-              ]),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildClientSection() {
+  // Layout original para móvil
+  Widget _buildMobileLayout() {
+    return CustomScrollView(
+      slivers: [
+        // App Bar personalizado
+        SliverAppBar(
+          expandedHeight: 120,
+          floating: false,
+          pinned: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () => context.go('/admin/orders'),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          flexibleSpace: FlexibleSpaceBar(
+            background: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF007BFF), Color(0xFF0056B3)],
+                ),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.add_box,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Crear Nuevo Pedido',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 22,
+                              color: Colors.white,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Complete todos los campos para crear el pedido',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Contenido principal móvil
+        SliverList(
+          delegate: SliverChildListDelegate([
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Información del cliente
+                    _buildClientSection(false),
+                    const SizedBox(height: 32),
+
+                    // Información del envío
+                    _buildShippingSection(false),
+                    const SizedBox(height: 32),
+
+                    // Detalles del paquete
+                    _buildPackageSection(false),
+                    const SizedBox(height: 32),
+
+                    // Configuración adicional
+                    _buildAdditionalSection(false),
+                    const SizedBox(height: 32),
+
+                    // Botones de acción
+                    _buildActionButtons(false),
+                    const SizedBox(height: 100),
+                  ],
+                ),
+              ),
+            ),
+          ]),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildClientSection(bool isDesktop) {
     return Container(
+      height: isDesktop ? 420 : null, // Altura fija para escritorio para alinear con otras columnas
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -194,24 +361,25 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(isDesktop ? 20.0 : 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Información del Cliente',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: isDesktop ? 18 : 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
+                color: const Color(0xFF1A1A1A),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: isDesktop ? 14 : 20),
             TextFormField(
               controller: _clientNameController,
               decoration: _inputDecoration(
                 label: 'Nombre completo',
                 icon: Icons.person,
+                isDesktop: isDesktop,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -220,12 +388,13 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
                 return null;
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: isDesktop ? 30 : 16),
             TextFormField(
               controller: _clientPhoneController,
               decoration: _inputDecoration(
                 label: 'Teléfono',
                 icon: Icons.phone,
+                isDesktop: isDesktop,
               ),
               keyboardType: TextInputType.phone,
               validator: (value) {
@@ -235,12 +404,13 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
                 return null;
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: isDesktop ? 30 : 16),
             TextFormField(
               controller: _clientEmailController,
               decoration: _inputDecoration(
                 label: 'Email (opcional)',
                 icon: Icons.email,
+                isDesktop: isDesktop,
               ),
               keyboardType: TextInputType.emailAddress,
             ),
@@ -250,130 +420,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
     );
   }
 
-  Widget _buildShippingSection() {
+  Widget _buildShippingSection(bool isDesktop) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadBox(
-            color: Colors.black.withOpacity(0.06),
-            offset: const Offset(0, 2),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Información del Envío',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
-              ),
-            ),
-            const SizedBox(height: 20),
-            
-            // Origen
-            const Text(
-              'Origen (Cali)',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A1A),
-              ),
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              value: _selectedOriginZone,
-              decoration: _inputDecoration(
-                label: 'Zona de Cali',
-                icon: Icons.location_on,
-              ),
-              items: _caliZones.map((zone) {
-                return DropdownMenuItem(
-                  value: zone,
-                  child: Text(zone),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedOriginZone = value!;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _originAddressController,
-              decoration: _inputDecoration(
-                label: 'Dirección completa de origen',
-                icon: Icons.home,
-              ),
-              maxLines: 2,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor ingrese la dirección de origen';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 24),
-
-            // Destino
-            const Text(
-              'Destino (Buenaventura)',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A1A),
-              ),
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              value: _selectedDestinationZone,
-              decoration: _inputDecoration(
-                label: 'Zona de Buenaventura',
-                icon: Icons.location_on_outlined,
-              ),
-              items: _buenaventuraZones.map((zone) {
-                return DropdownMenuItem(
-                  value: zone,
-                  child: Text(zone),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedDestinationZone = value!;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _destinationAddressController,
-              decoration: _inputDecoration(
-                label: 'Dirección completa de destino',
-                icon: Icons.location_city,
-              ),
-              maxLines: 2,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor ingrese la dirección de destino';
-                }
-                return null;
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPackageSection() {
-    return Container(
+      height: isDesktop ? 420 : null, // Altura fija para escritorio
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -386,78 +435,263 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(isDesktop ? 20.0 : 24.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Información del Envío',
+                style: TextStyle(
+                  fontSize: isDesktop ? 18 : 18,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF1A1A1A),
+                ),
+              ),
+              SizedBox(height: isDesktop ? 14 : 20),
+              
+              // Origen
+              Text(
+                'Origen (Cali)',
+                style: TextStyle(
+                  fontSize: isDesktop ? 12 : 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1A1A1A),
+                ),
+              ),
+              SizedBox(height: isDesktop ? 10 : 8),
+              DropdownButtonFormField<String>(
+                value: _selectedOriginZone,
+                decoration: _inputDecoration(
+                  label: 'Zona de Cali',
+                  icon: Icons.location_on,
+                  isDesktop: isDesktop,
+                ),
+                items: _caliZones.map((zone) {
+                  return DropdownMenuItem(
+                    value: zone,
+                    child: Text(zone),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedOriginZone = value!;
+                  });
+                },
+              ),
+              SizedBox(height: isDesktop ? 8 : 16),
+              TextFormField(
+                controller: _originAddressController,
+                decoration: _inputDecoration(
+                  label: 'Dirección completa de origen',
+                  icon: Icons.home,
+                  isDesktop: isDesktop,
+                ),
+                maxLines: isDesktop ? 2 : 2,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese la dirección de origen';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: isDesktop ? 12 : 24),
+
+              // Destino
+              Text(
+                'Destino (Buenaventura)',
+                style: TextStyle(
+                  fontSize: isDesktop ? 12 : 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1A1A1A),
+                ),
+              ),
+              SizedBox(height: isDesktop ? 10 : 8),
+              DropdownButtonFormField<String>(
+                value: _selectedDestinationZone,
+                decoration: _inputDecoration(
+                  label: 'Zona de Buenaventura',
+                  icon: Icons.location_on_outlined,
+                  isDesktop: isDesktop,
+                ),
+                items: _buenaventuraZones.map((zone) {
+                  return DropdownMenuItem(
+                    value: zone,
+                    child: Text(zone),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedDestinationZone = value!;
+                  });
+                },
+              ),
+              SizedBox(height: isDesktop ? 8 : 16),
+              TextFormField(
+                controller: _destinationAddressController,
+                decoration: _inputDecoration(
+                  label: 'Dirección completa de destino',
+                  icon: Icons.location_city,
+                  isDesktop: isDesktop,
+                ),
+                maxLines: isDesktop ? 2 : 2,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese la dirección de destino';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPackageSection(bool isDesktop) {
+    return Container(
+      height: isDesktop ? 420 : null, // Altura fija para escritorio
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            offset: const Offset(0, 2),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(isDesktop ? 20.0 : 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Detalles del Paquete',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: isDesktop ? 18 : 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
+                color: const Color(0xFF1A1A1A),
               ),
             ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _packageCountController,
-                    decoration: _inputDecoration(
-                      label: 'Cantidad de paquetes',
-                      icon: Icons.inventory_2,
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Ingrese la cantidad';
-                      }
-                      if (int.tryParse(value) == null || int.parse(value) <= 0) {
-                        return 'Cantidad inválida';
-                      }
-                      return null;
-                    },
-                  ),
+            SizedBox(height: isDesktop ? 14 : 20),
+            
+            // En escritorio: Campos en columna para mejor uso del espacio vertical
+            if (isDesktop) ...[
+              TextFormField(
+                controller: _packageCountController,
+                decoration: _inputDecoration(
+                  label: 'Cantidad de paquetes',
+                  icon: Icons.inventory_2,
+                  isDesktop: isDesktop,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextFormField(
-                    controller: _weightController,
-                    decoration: _inputDecoration(
-                      label: 'Peso total (kg)',
-                      icon: Icons.scale,
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Ingrese el peso';
-                      }
-                      if (double.tryParse(value) == null || double.parse(value) <= 0) {
-                        return 'Peso inválido';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _specialInstructionsController,
-              decoration: _inputDecoration(
-                label: 'Instrucciones especiales (opcional)',
-                icon: Icons.note,
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ingrese la cantidad';
+                  }
+                  if (int.tryParse(value) == null || int.parse(value) <= 0) {
+                    return 'Cantidad inválida';
+                  }
+                  return null;
+                },
               ),
-              maxLines: 3,
-            ),
+              const SizedBox(height: 30),
+              TextFormField(
+                controller: _weightController,
+                decoration: _inputDecoration(
+                  label: 'Peso total (kg)',
+                  icon: Icons.scale,
+                  isDesktop: isDesktop,
+                ),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ingrese el peso';
+                  }
+                  if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                    return 'Peso inválido';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 30),
+              TextFormField(
+                controller: _specialInstructionsController,
+                decoration: _inputDecoration(
+                  label: 'Instrucciones especiales',
+                  icon: Icons.note,
+                  isDesktop: isDesktop,
+                ),
+                maxLines: 3,
+              ),
+            ] else ...[
+              // En móvil: Layout original en fila
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _packageCountController,
+                      decoration: _inputDecoration(
+                        label: 'Cantidad de paquetes',
+                        icon: Icons.inventory_2,
+                        isDesktop: isDesktop,
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Ingrese la cantidad';
+                        }
+                        if (int.tryParse(value) == null || int.parse(value) <= 0) {
+                          return 'Cantidad inválida';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _weightController,
+                      decoration: _inputDecoration(
+                        label: 'Peso total (kg)',
+                        icon: Icons.scale,
+                        isDesktop: isDesktop,
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Ingrese el peso';
+                        }
+                        if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                          return 'Peso inválido';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _specialInstructionsController,
+                decoration: _inputDecoration(
+                  label: 'Instrucciones especiales (opcional)',
+                  icon: Icons.note,
+                  isDesktop: isDesktop,
+                ),
+                maxLines: 3,
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAdditionalSection() {
+  Widget _buildAdditionalSection(bool isDesktop) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -471,78 +705,73 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(isDesktop ? 18.0 : 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Configuración Adicional',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: isDesktop ? 18 : 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
+                color: const Color(0xFF1A1A1A),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: isDesktop ? 20 : 20),
             
             // Prioridad
-            const Text(
+            Text(
               'Prioridad del pedido',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: isDesktop ? 16 : 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A1A),
+                color: const Color(0xFF1A1A1A),
               ),
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: _priorities.map((priority) {
-                return Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    child: _PriorityOption(
-                      priority: priority,
-                      isSelected: _selectedPriority == priority,
-                      onTap: () => setState(() => _selectedPriority = priority),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 24),
+            SizedBox(height: isDesktop ? 12 : 12),
+            _buildMobilePriorityRow(isDesktop), // Usar siempre el layout en fila
+            SizedBox(height: isDesktop ? 14 : 24),
 
             // Fecha de entrega
-            const Text(
+            Text(
               'Fecha de entrega estimada',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: isDesktop ? 16 : 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A1A),
+                color: const Color(0xFF1A1A1A),
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: isDesktop ? 12 : 12),
             InkWell(
               onTap: _selectDeliveryDate,
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(isDesktop ? 10 : 16),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey[300]!),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today, color: Color(0xFF007BFF)),
-                    const SizedBox(width: 12),
+                    Icon(
+                      Icons.calendar_today, 
+                      color: const Color(0xFF007BFF),
+                      size: isDesktop ? 16 : 20,
+                    ),
+                    SizedBox(width: isDesktop ? 12 : 12),
                     Text(
                       '${_selectedDeliveryDate.day}/${_selectedDeliveryDate.month}/${_selectedDeliveryDate.year}',
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: isDesktop ? 16 : 16,
                         fontWeight: FontWeight.w500,
-                        color: Color(0xFF1A1A1A),
+                        color: const Color(0xFF1A1A1A),
                       ),
                     ),
                     const Spacer(),
-                    const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                    Icon(
+                      Icons.arrow_drop_down, 
+                      color: Colors.grey,
+                      size: isDesktop ? 18 : 24,
+                    ),
                   ],
                 ),
               ),
@@ -553,12 +782,30 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildMobilePriorityRow([bool isDesktop = false]) {
+    return Row(
+      children: _priorities.map((priority) {
+        return Expanded(
+          child: Container(
+            margin: EdgeInsets.only(right: isDesktop ? 6 : 8),
+            child: _PriorityOption(
+              priority: priority,
+              isSelected: _selectedPriority == priority,
+              onTap: () => setState(() => _selectedPriority = priority),
+              isDesktop: isDesktop,
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildActionButtons(bool isDesktop) {
     return Column(
       children: [
         Container(
           width: double.infinity,
-          height: 56,
+          height: isDesktop ? 48 : 56,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [Color(0xFF28A745), Color(0xFF20A13A)],
@@ -583,37 +830,18 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
                 borderRadius: BorderRadius.circular(12.0),
               ),
             ),
-            icon: const Icon(Icons.check, color: Colors.white),
-            label: const Text(
+            icon: Icon(
+              Icons.check, 
+              color: Colors.white,
+              size: isDesktop ? 18 : 20,
+            ),
+            label: Text(
               'Crear Pedido',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: isDesktop ? 16 : 16,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.5,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          height: 56,
-          child: OutlinedButton.icon(
-            onPressed: () => context.go('/admin/orders'),
-            icon: const Icon(Icons.cancel_outlined),
-            label: const Text(
-              'Cancelar',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: const Color(0xFFDC3545),
-              side: const BorderSide(color: Color(0xFFDC3545)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
               ),
             ),
           ),
@@ -625,15 +853,20 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
   InputDecoration _inputDecoration({
     required String label,
     required IconData icon,
+    required bool isDesktop,
   }) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: const Color(0xFF007BFF)),
+      prefixIcon: Icon(
+        icon, 
+        color: const Color(0xFF007BFF),
+        size: isDesktop ? 16 : 20,
+      ),
       filled: true,
       fillColor: Colors.grey[50],
-      contentPadding: const EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 20.0,
+      contentPadding: EdgeInsets.symmetric(
+        vertical: isDesktop ? 10.0 : 16.0,
+        horizontal: 16.0,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12.0),
@@ -715,29 +948,18 @@ class _CreateOrderScreenState extends State<CreateOrderScreen>
   }
 }
 
-// Clase para el BoxShadow personalizado
-class BoxShadBox extends BoxShadow {
-  BoxShadBox({
-    required Color color,
-    required Offset offset,
-    required double blurRadius,
-  }) : super(
-          color: color,
-          offset: offset,
-          blurRadius: blurRadius,
-        );
-}
-
 // Widget para las opciones de prioridad
 class _PriorityOption extends StatelessWidget {
   final String priority;
   final bool isSelected;
   final VoidCallback onTap;
+  final bool isDesktop;
 
   const _PriorityOption({
     required this.priority,
     required this.isSelected,
     required this.onTap,
+    required this.isDesktop,
   });
 
   Color _getPriorityColor(String priority) {
@@ -773,7 +995,10 @@ class _PriorityOption extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: EdgeInsets.symmetric(
+          vertical: isDesktop ? 6 : 12, 
+          horizontal: isDesktop ? 8 : 16
+        ),
         decoration: BoxDecoration(
           color: isSelected ? color.withOpacity(0.1) : Colors.grey[50],
           borderRadius: BorderRadius.circular(12),
@@ -787,13 +1012,13 @@ class _PriorityOption extends StatelessWidget {
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
               color: isSelected ? color : Colors.grey[400],
-              size: 20,
+              size: isDesktop ? 14 : 20,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: isDesktop ? 3 : 8),
             Text(
               _getPriorityText(priority),
               style: TextStyle(
-                fontSize: 14,
+                fontSize: isDesktop ? 11 : 14,
                 fontWeight: FontWeight.w600,
                 color: isSelected ? color : Colors.grey[600],
               ),

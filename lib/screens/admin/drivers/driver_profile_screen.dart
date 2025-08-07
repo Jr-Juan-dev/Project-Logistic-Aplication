@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class AdminProfileScreen extends StatelessWidget {
-  const AdminProfileScreen({super.key});
-  static const String name = 'AdminProfileScreen';
+class DriverProfileScreen extends StatelessWidget {
+  const DriverProfileScreen({super.key, required String driverId});
+  static const String name = 'DriverProfileScreen';
 
   @override
   Widget build(BuildContext context) {

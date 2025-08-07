@@ -22,6 +22,7 @@ import 'package:topax/screens/admin/orders/create_order_screen.dart';
 // Importaciones para las pantallas de asignación de conductores
 import 'package:topax/screens/admin/drivers/driver_assignment_screen.dart';
 import 'package:topax/screens/admin/drivers/assign_driver_screen.dart';
+import 'package:topax/screens/admin/drivers/driver_profile_screen.dart';
 
 // Importaciones para las pantallas de reportes
 import 'package:topax/screens/admin/reports/reports_screen.dart';
@@ -148,6 +149,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
         return AssignDriverScreen(orderId: orderId);
+      },
+    ),
+    GoRoute(
+      path: '/admin/drivers/profile/:driverId',
+      name: 'DriverProfileScreen',
+      builder: (context, state) {
+        final driverId = state.pathParameters['driverId']!;
+        return DriverProfileScreen(driverId: driverId);
       },
     ),
 

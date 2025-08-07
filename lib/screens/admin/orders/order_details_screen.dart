@@ -110,134 +110,271 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = MediaQuery.of(context).size.width > 768;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFB),
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: CustomScrollView(
-          slivers: [
-            // App Bar personalizado
-            SliverAppBar(
-              expandedHeight: 120,
-              floating: false,
-              pinned: true,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                onPressed: () => context.go('/admin/orders'),
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-              ),
-              actions: [
-                IconButton(
-                  onPressed: _shareOrderDetails,
-                  icon: const Icon(Icons.share, color: Colors.white),
-                  tooltip: 'Compartir detalles',
-                ),
-              ],
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF007BFF), Color(0xFF0056B3)],
-                    ),
-                  ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(
-                                  Icons.receipt_long,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              const Text(
-                                'Detalles del Pedido',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 22,
-                                  color: Colors.white,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _orderDetails['trackingCode'],
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white.withOpacity(0.9),
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+        child: isDesktop ? _buildDesktopLayout() : _buildMobileLayout(),
+      ),
+    );
+  }
 
-            // Contenido principal
-            SliverList(
-              delegate: SliverChildListDelegate([
-                Padding(
+  // Layout compacto para escritorio
+  Widget _buildDesktopLayout() {
+    return SingleChildScrollView(
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          margin: const EdgeInsets.symmetric(horizontal: 80.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header compacto
+              Container(
+                margin: const EdgeInsets.only(top: 20, bottom: 20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF007BFF), Color(0xFF0056B3)],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      offset: const Offset(0, 4),
+                      blurRadius: 20,
+                    ),
+                  ],
+                ),
+                child: Padding(
                   padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      // Estado y acciones rápidas
-                      _buildStatusCard(),
-                      const SizedBox(height: 24),
-
-                      // Información del cliente
-                      _buildClientInfoCard(),
-                      const SizedBox(height: 24),
-
-                      // Información del envío
-                      _buildShippingInfoCard(),
-                      const SizedBox(height: 24),
-
-                      // Información del conductor (si está asignado)
-                      if (_orderDetails['driverName'] != null)
-                        _buildDriverInfoCard(),
-                      if (_orderDetails['driverName'] != null)
-                        const SizedBox(height: 24),
-
-                      // Timeline del pedido
-                      _buildTimelineCard(),
-                      const SizedBox(height: 24),
-
-                      // Botones de acción
-                      _buildActionButtons(),
-                      const SizedBox(height: 100),
+                      IconButton(
+                        onPressed: () => context.go('/admin/orders'),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.receipt_long,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Detalles del Pedido',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 28,
+                                color: Colors.white,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _orderDetails['trackingCode'],
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white.withOpacity(0.9),
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: _shareOrderDetails,
+                        icon: const Icon(Icons.share, color: Colors.white, size: 24),
+                        tooltip: 'Compartir detalles',
+                      ),
                     ],
                   ),
                 ),
-              ]),
-            ),
-          ],
+              ),
+
+              // Grid de información principal (2 columnas)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Columna izquierda
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        _buildStatusCard(isDesktop: true),
+                        const SizedBox(height: 20),
+                        _buildClientInfoCard(isDesktop: true),
+                        const SizedBox(height: 20),
+                        _buildShippingInfoCard(isDesktop: true),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  
+                  // Columna derecha
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      children: [
+                        if (_orderDetails['driverName'] != null) ...[
+                          _buildDriverInfoCard(isDesktop: true),
+                          const SizedBox(height: 20),
+                        ],
+                        _buildTimelineCard(isDesktop: true),
+                        const SizedBox(height: 20),
+                        _buildActionButtons(isDesktop: true),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildStatusCard() {
+  // Layout original para móvil
+  Widget _buildMobileLayout() {
+    return CustomScrollView(
+      slivers: [
+        // App Bar personalizado
+        SliverAppBar(
+          expandedHeight: 120,
+          floating: false,
+          pinned: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () => context.go('/admin/orders'),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          actions: [
+            IconButton(
+              onPressed: _shareOrderDetails,
+              icon: const Icon(Icons.share, color: Colors.white),
+              tooltip: 'Compartir detalles',
+            ),
+          ],
+          flexibleSpace: FlexibleSpaceBar(
+            background: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF007BFF), Color(0xFF0056B3)],
+                ),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.receipt_long,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Detalles del Pedido',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 22,
+                              color: Colors.white,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _orderDetails['trackingCode'],
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Contenido principal móvil
+        SliverList(
+          delegate: SliverChildListDelegate([
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Estado y acciones rápidas
+                  _buildStatusCard(isDesktop: false),
+                  const SizedBox(height: 24),
+
+                  // Información del cliente
+                  _buildClientInfoCard(isDesktop: false),
+                  const SizedBox(height: 24),
+
+                  // Información del envío
+                  _buildShippingInfoCard(isDesktop: false),
+                  const SizedBox(height: 24),
+
+                  // Información del conductor (si está asignado)
+                  if (_orderDetails['driverName'] != null)
+                    _buildDriverInfoCard(isDesktop: false),
+                  if (_orderDetails['driverName'] != null)
+                    const SizedBox(height: 24),
+
+                  // Timeline del pedido
+                  _buildTimelineCard(isDesktop: false),
+                  const SizedBox(height: 24),
+
+                  // Botones de acción
+                  _buildActionButtons(isDesktop: false),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          ]),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusCard({required bool isDesktop}) {
     final statusColor = _getStatusColor(_orderDetails['status']);
     final priorityColor = _getPriorityColor(_orderDetails['priority']);
 
@@ -254,19 +391,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(isDesktop ? 20.0 : 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Estado del Pedido',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: isDesktop ? 16 : 18,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
+                    color: const Color(0xFF1A1A1A),
                   ),
                 ),
                 Container(
@@ -286,12 +423,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: isDesktop ? 12 : 16),
             Row(
               children: [
                 Container(
-                  width: 60,
-                  height: 60,
+                  width: isDesktop ? 50 : 60,
+                  height: isDesktop ? 50 : 60,
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
@@ -299,7 +436,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                   child: Icon(
                     _getStatusIcon(_orderDetails['status']),
                     color: statusColor,
-                    size: 28,
+                    size: isDesktop ? 24 : 28,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -310,7 +447,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                       Text(
                         _getStatusText(_orderDetails['status']),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: isDesktop ? 14 : 16,
                           fontWeight: FontWeight.w600,
                           color: statusColor,
                         ),
@@ -319,7 +456,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                       Text(
                         'Entrega estimada: ${_orderDetails['estimatedDelivery']}',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: isDesktop ? 12 : 14,
                           color: Colors.grey[600],
                         ),
                       ),
@@ -334,7 +471,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
     );
   }
 
-  Widget _buildClientInfoCard() {
+  Widget _buildClientInfoCard({required bool isDesktop}) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -348,33 +485,36 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(isDesktop ? 20.0 : 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Información del Cliente',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: isDesktop ? 16 : 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
+                color: const Color(0xFF1A1A1A),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: isDesktop ? 12 : 16),
             _InfoRow(
               icon: Icons.person,
               label: 'Nombre',
               value: _orderDetails['clientName'],
+              isDesktop: isDesktop,
             ),
             _InfoRow(
               icon: Icons.phone,
               label: 'Teléfono',
               value: _orderDetails['clientPhone'],
+              isDesktop: isDesktop,
             ),
             _InfoRow(
               icon: Icons.email,
               label: 'Email',
               value: _orderDetails['clientEmail'],
+              isDesktop: isDesktop,
             ),
           ],
         ),
@@ -382,7 +522,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
     );
   }
 
-  Widget _buildShippingInfoCard() {
+  Widget _buildShippingInfoCard({required bool isDesktop}) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -396,44 +536,49 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(isDesktop ? 20.0 : 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Información del Envío',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: isDesktop ? 16 : 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
+                color: const Color(0xFF1A1A1A),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: isDesktop ? 12 : 16),
             _InfoRow(
               icon: Icons.location_on,
               label: 'Origen',
               value: _orderDetails['originAddress'],
+              isDesktop: isDesktop,
             ),
             _InfoRow(
               icon: Icons.location_on_outlined,
               label: 'Destino',
               value: _orderDetails['destinationAddress'],
+              isDesktop: isDesktop,
             ),
             _InfoRow(
               icon: Icons.inventory_2,
               label: 'Paquetes',
               value: '${_orderDetails['packageCount']} paquete(s)',
+              isDesktop: isDesktop,
             ),
             _InfoRow(
               icon: Icons.scale,
               label: 'Peso total',
               value: _orderDetails['totalWeight'],
+              isDesktop: isDesktop,
             ),
             if (_orderDetails['specialInstructions'].isNotEmpty)
               _InfoRow(
                 icon: Icons.note,
                 label: 'Instrucciones',
                 value: _orderDetails['specialInstructions'],
+                isDesktop: isDesktop,
               ),
           ],
         ),
@@ -441,7 +586,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
     );
   }
 
-  Widget _buildDriverInfoCard() {
+  Widget _buildDriverInfoCard({required bool isDesktop}) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -455,19 +600,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(isDesktop ? 20.0 : 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Conductor Asignado',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: isDesktop ? 16 : 18,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A1A),
+                    color: const Color(0xFF1A1A1A),
                   ),
                 ),
                 Container(
@@ -487,21 +632,24 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: isDesktop ? 12 : 16),
             _InfoRow(
               icon: Icons.person,
               label: 'Conductor',
               value: _orderDetails['driverName'],
+              isDesktop: isDesktop,
             ),
             _InfoRow(
               icon: Icons.phone,
               label: 'Teléfono',
               value: _orderDetails['driverPhone'],
+              isDesktop: isDesktop,
             ),
             _InfoRow(
               icon: Icons.directions_car,
               label: 'Vehículo',
               value: _orderDetails['vehiclePlate'],
+              isDesktop: isDesktop,
             ),
           ],
         ),
@@ -509,7 +657,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
     );
   }
 
-  Widget _buildTimelineCard() {
+  Widget _buildTimelineCard({required bool isDesktop}) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -523,25 +671,26 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(isDesktop ? 20.0 : 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Historial del Pedido',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: isDesktop ? 16 : 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
+                color: const Color(0xFF1A1A1A),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: isDesktop ? 12 : 16),
             ...(_orderDetails['timeline'] as List).map((event) => 
               _TimelineItem(
                 timestamp: event['timestamp'],
                 description: event['description'],
                 location: event['location'],
                 isLast: (_orderDetails['timeline'] as List).last == event,
+                isDesktop: isDesktop,
               ),
             ),
           ],
@@ -550,13 +699,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons({required bool isDesktop}) {
     return Column(
       children: [
         if (_orderDetails['driverName'] == null)
           Container(
             width: double.infinity,
-            height: 56,
+            height: isDesktop ? 48 : 56,
             margin: const EdgeInsets.only(bottom: 12),
             child: ElevatedButton.icon(
               onPressed: () => context.go('/admin/drivers/assign/${widget.orderId}'),
@@ -567,11 +716,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              icon: const Icon(Icons.person_add),
-              label: const Text(
+              icon: Icon(Icons.person_add, size: isDesktop ? 18 : 20),
+              label: Text(
                 'Asignar Conductor',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: isDesktop ? 14 : 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -579,7 +728,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
           ),
         Container(
           width: double.infinity,
-          height: 56,
+          height: isDesktop ? 48 : 56,
           margin: const EdgeInsets.only(bottom: 12),
           child: ElevatedButton.icon(
             onPressed: _updateOrderStatus,
@@ -590,49 +739,90 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            icon: const Icon(Icons.update),
-            label: const Text(
+            icon: Icon(Icons.update, size: isDesktop ? 18 : 20),
+            label: Text(
               'Actualizar Estado',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: isDesktop ? 14 : 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _contactClient,
-                icon: const Icon(Icons.call, size: 18),
-                label: const Text('Contactar Cliente'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF28A745),
-                  side: const BorderSide(color: Color(0xFF28A745)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+        if (isDesktop)
+          // Botones en columna para desktop (para que se ajusten mejor al layout)
+          Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 40,
+                margin: const EdgeInsets.only(bottom: 8),
+                child: OutlinedButton.icon(
+                  onPressed: _contactClient,
+                  icon: const Icon(Icons.call, size: 16),
+                  label: const Text('Contactar Cliente', style: TextStyle(fontSize: 13)),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF28A745),
+                    side: const BorderSide(color: Color(0xFF28A745)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _trackLocation,
-                icon: const Icon(Icons.location_on, size: 18),
-                label: const Text('Rastrear Ubicación'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF007BFF),
-                  side: const BorderSide(color: Color(0xFF007BFF)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              Container(
+                width: double.infinity,
+                height: 40,
+                child: OutlinedButton.icon(
+                  onPressed: _trackLocation,
+                  icon: const Icon(Icons.location_on, size: 16),
+                  label: const Text('Rastrear Ubicación', style: TextStyle(fontSize: 13)),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF007BFF),
+                    side: const BorderSide(color: Color(0xFF007BFF)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          )
+        else
+          // Botones en fila para móvil (original)
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _contactClient,
+                  icon: const Icon(Icons.call, size: 18),
+                  label: const Text('Contactar Cliente'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF28A745),
+                    side: const BorderSide(color: Color(0xFF28A745)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _trackLocation,
+                  icon: const Icon(Icons.location_on, size: 18),
+                  label: const Text('Rastrear Ubicación'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF007BFF),
+                    side: const BorderSide(color: Color(0xFF007BFF)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
       ],
     );
   }
@@ -762,30 +952,32 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+  final bool isDesktop;
 
   const _InfoRow({
     required this.icon,
     required this.label,
     required this.value,
+    required this.isDesktop,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: isDesktop ? 12 : 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: isDesktop ? 32 : 40,
+            height: isDesktop ? 32 : 40,
             decoration: BoxDecoration(
               color: const Color(0xFF007BFF).withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: const Color(0xFF007BFF), size: 20),
+            child: Icon(icon, color: const Color(0xFF007BFF), size: isDesktop ? 16 : 20),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: isDesktop ? 12 : 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -793,18 +985,18 @@ class _InfoRow extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: isDesktop ? 11 : 12,
                     color: Colors.grey[600],
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: isDesktop ? 2 : 4),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: TextStyle(
+                    fontSize: isDesktop ? 13 : 14,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1A1A1A),
+                    color: const Color(0xFF1A1A1A),
                   ),
                 ),
               ],
@@ -822,12 +1014,14 @@ class _TimelineItem extends StatelessWidget {
   final String description;
   final String location;
   final bool isLast;
+  final bool isDesktop;
 
   const _TimelineItem({
     required this.timestamp,
     required this.description,
     required this.location,
     required this.isLast,
+    required this.isDesktop,
   });
 
   @override
@@ -839,8 +1033,8 @@ class _TimelineItem extends StatelessWidget {
           Column(
             children: [
               Container(
-                width: 12,
-                height: 12,
+                width: isDesktop ? 10 : 12,
+                height: isDesktop ? 10 : 12,
                 decoration: const BoxDecoration(
                   color: Color(0xFF007BFF),
                   shape: BoxShape.circle,
@@ -849,39 +1043,39 @@ class _TimelineItem extends StatelessWidget {
               if (!isLast)
                 Container(
                   width: 2,
-                  height: 60,
+                  height: isDesktop ? 50 : 60,
                   color: Colors.grey[300],
                 ),
             ],
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: isDesktop ? 12 : 16),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0 : 20),
+              padding: EdgeInsets.only(bottom: isLast ? 0 : (isDesktop ? 16 : 20)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     description,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    style: TextStyle(
+                      fontSize: isDesktop ? 12 : 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1A1A1A),
+                      color: const Color(0xFF1A1A1A),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: isDesktop ? 2 : 4),
                   Text(
                     location,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: isDesktop ? 10 : 12,
                       color: Colors.grey[600],
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: isDesktop ? 2 : 4),
                   Text(
                     timestamp,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: isDesktop ? 10 : 12,
                       color: Colors.grey[500],
                       fontWeight: FontWeight.w500,
                     ),

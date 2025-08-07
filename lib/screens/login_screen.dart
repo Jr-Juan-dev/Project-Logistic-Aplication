@@ -272,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     ),
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        context.go('/home'); // Navegar al HomeScreen por defecto
+                                        context.go('/admin'); // Navegar al HomeScreen por defecto
                                         
                                         // Aquí puedes agregar la lógica de validación
                                         // y navegación según el rol del usuario.
